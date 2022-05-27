@@ -1,0 +1,157 @@
+package com.company;
+
+import java.util.*;
+import java.lang.Math;
+
+
+public class Main {
+    static double n = 30 , exactSolution = (Math.exp(3) - Math.exp(1));
+    static double a = 1 , b = 3;
+
+
+    static void rctRight(){
+        double h = (b-a)/n;
+        double sum = 0 , x;
+
+        for (int i = 0; i <= n; i++) {
+            x = a + i*h; sum += h * Math.exp(x);
+        }
+        double err = Math.abs(sum - exactSolution);
+
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum,err );
+    }
+
+
+    static void rctLeft(){
+        double h = (b-a)/n;
+        double sum = 0 , x;
+        for (int i = 0; i <= n; i++) {
+            x = a + (i-1)*h; sum += h * Math.exp(x);
+        }
+        double err = Math.abs(sum - exactSolution);
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum,err );
+    }
+
+
+    static void midPoint(){
+        double h = (b-a)/n;
+        double sum = 0 , x;
+        for (double i = 0; i <= n; i++) {
+            x = a + (i-0.5)*h; sum += h * Math.exp(x);
+        } double err = Math.abs(sum - exactSolution);
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum,err );
+    }
+
+
+    static void trapezoids(){
+        double h = (b-a)/n;
+        double sum = 0.5 * (Math.exp(3) + Math.exp(1)) , x;
+        for (int i = 0; i < n; i++) {
+            x = a + i*h; sum += Math.exp(x);
+        }
+        double err = Math.abs(sum * h - exactSolution);
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum * h,err );
+    }
+
+    static void simpsonBy3() {
+        if (n%2 != 0){ return;
+        }
+        double h = (b-a)/n , coefficient;
+        double sum =(Math.exp(3) + Math.exp(1)) , x;
+        for (int i = 0; i < n; i++) {
+            x = a + i*h;
+            coefficient = 3 + Math.pow(-1 , (i+1));
+            sum += coefficient * Math.exp(x);
+        }
+        double err = Math.abs((h/3) * sum - exactSolution);
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(h/3) * sum,err );
+    }
+
+    static void _3simpsonBy8() {
+        if (n%2 != 0){ return;
+        }
+        double h = (b-a)/n ;
+        double sum =(Math.exp(3) + Math.exp(1)) , x;
+        for (int i = 0; i < n; i++) {
+            if(i%3 == 0){ x = a + i*h;
+                sum += 2 * Math.exp(x);
+            } else{
+                x = a + i*h;
+                sum += 3 * Math.exp(x);
+            }
+        }
+        double err = Math.abs((3*h/8) * sum - exactSolution);
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(3*h/8) * sum,err );
+    }
+
+    static void weddle() {
+        if (n%5 != 0){ return;
+        } double h = (b-a)/n;
+        double sum =0 , x;
+        for (int i = 0; i <= n; i++) {
+            if(i%2 == 0){
+                x = a + i*h;
+                sum += Math.exp(x);
+            } else if(i==3 || i==10 || i==17 || i==24) {
+                x = a + i*h; sum += 6 * Math.exp(x);
+            } else{
+                x = a + i*h;
+                sum += 5 * Math.exp(x);
+            }
+        }
+        double err = Math.abs((3*h/10) * sum - exactSolution);
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(3*h/10) * sum,err );
+    }
+
+    static void boole() {
+        double h = (b-a)/n;
+        double sum = 7*(Math.exp(3) + Math.exp(1)) , x;
+        for (int i = 0; i < n; i++) {
+            if(i%2 != 0){
+                x = a + i*h;
+                sum += 32 * (Math.exp(x));
+            } else if(i==2 || i==10 || i==6 || i==14 || i==18 || i==22 || i==26) {
+                x = a + i*h;
+                sum += 12 * Math.exp(x);
+            } else{
+                x = a + i*h;
+                sum += 14 * Math.exp(x);
+            }
+        }
+        double err = Math.abs((2*h/45) * sum - exactSolution);
+        System.out.println(" Ecact Solution Approximate value Error");
+        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(2*h/45) * sum,err );
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Choose the method you want: \n" +
+                "1.Rectangle from left.\n" +
+                "2.Rectangle from right.\n" +
+                "3.Mid_point.\n" +
+                "4.Trapezoids.\n" +
+                "5.Simpson 1/3.\n" +
+                "6.Simpson 3/8.\n" +
+                "7.Weddle.\n" +
+                "8.Boole.");
+        Scanner sc = new Scanner(System.in);
+        int a = sc.nextInt();
+        switch (a) {
+            case 1 -> rctRight();
+            case 2 -> rctLeft();
+            case 3 -> midPoint();
+            case 4 -> trapezoids();
+            case 5 -> simpsonBy3();
+            case 6 -> _3simpsonBy8();
+            case 7 -> weddle();
+            case 8 -> boole();
+            default -> System.out.println("There is no such method");
+        }
+    }
+}
