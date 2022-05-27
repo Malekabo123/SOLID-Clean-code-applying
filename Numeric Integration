@@ -5,153 +5,178 @@ import java.lang.Math;
 
 
 public class Main {
-    static double n = 30 , exactSolution = (Math.exp(3) - Math.exp(1));
-    static double a = 1 , b = 3;
+    static double numberOfIntervals = 30 ,//N
+                  exactSolution = (Math.exp(3) - Math.exp(1)),
+                  integrationLimitLeft = 1 , integrationLimitRight = 3, //a and b
+                  stepSize = (integrationLimitRight - integrationLimitLeft)/ numberOfIntervals, //h
+                  sumOfArea = 0, err ,
+                  step; //x_n
 
 
-    static void rctRight(){
-        double h = (b-a)/n;
-        double sum = 0 , x;
+    static void rightRectangle(){
 
-        for (int i = 0; i <= n; i++) {
-            x = a + i*h; sum += h * Math.exp(x);
+        for (int i = 0; i <= numberOfIntervals; i++) {
+            step = integrationLimitLeft + i* stepSize;
+            sumOfArea += stepSize * Math.exp(step);
         }
-        double err = Math.abs(sum - exactSolution);
 
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum,err );
+        err = Math.abs(sumOfArea - exactSolution);
     }
 
 
-    static void rctLeft(){
-        double h = (b-a)/n;
-        double sum = 0 , x;
-        for (int i = 0; i <= n; i++) {
-            x = a + (i-1)*h; sum += h * Math.exp(x);
+    static void leftRectangle(){
+
+        for (int i = 0; i <= numberOfIntervals; i++) {
+            step = integrationLimitLeft + (i-1)*stepSize; //x_n = x_0 + (n-1)*h
+            sumOfArea += stepSize * Math.exp(step);
         }
-        double err = Math.abs(sum - exactSolution);
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum,err );
+
+        err = Math.abs(sumOfArea - exactSolution);
     }
 
 
     static void midPoint(){
-        double h = (b-a)/n;
-        double sum = 0 , x;
-        for (double i = 0; i <= n; i++) {
-            x = a + (i-0.5)*h; sum += h * Math.exp(x);
-        } double err = Math.abs(sum - exactSolution);
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum,err );
+
+        for (double i = 0; i <= numberOfIntervals; i++) {
+            step = integrationLimitLeft + (i-0.5)*stepSize;
+            sumOfArea += stepSize * Math.exp(step);
+        }
+
+        err = Math.abs(sumOfArea - exactSolution);
     }
 
 
     static void trapezoids(){
-        double h = (b-a)/n;
-        double sum = 0.5 * (Math.exp(3) + Math.exp(1)) , x;
-        for (int i = 0; i < n; i++) {
-            x = a + i*h; sum += Math.exp(x);
+
+        sumOfArea = 0.5 * (Math.exp(3) + Math.exp(1));
+
+        for (int i = 0; i < numberOfIntervals; i++) {
+            step = integrationLimitLeft + i*stepSize;
+            sumOfArea += Math.exp(step);
         }
-        double err = Math.abs(sum * h - exactSolution);
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,sum * h,err );
+
+        err = Math.abs(sumOfArea * stepSize - exactSolution);
     }
 
-    static void simpsonBy3() {
-        if (n%2 != 0){ return;
+
+    static void simpsonOneThird() {
+
+        if (numberOfIntervals %2 != 0){
+            return;
         }
-        double h = (b-a)/n , coefficient;
-        double sum =(Math.exp(3) + Math.exp(1)) , x;
-        for (int i = 0; i < n; i++) {
-            x = a + i*h;
-            coefficient = 3 + Math.pow(-1 , (i+1));
-            sum += coefficient * Math.exp(x);
+
+        double coefficient; //for functions sign
+        sumOfArea =(Math.exp(3) + Math.exp(1));
+
+        for (int i = 0; i < numberOfIntervals; i++) {
+            step = integrationLimitLeft + i*stepSize;
+            coefficient = 3 + Math.pow(-1 , (i+1)); //3+1 or 3-1
+            sumOfArea += coefficient * Math.exp(step);
         }
-        double err = Math.abs((h/3) * sum - exactSolution);
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(h/3) * sum,err );
+
+        err = Math.abs((stepSize/3) * sumOfArea - exactSolution);
     }
 
-    static void _3simpsonBy8() {
-        if (n%2 != 0){ return;
+    static void simpsonThreeEighths() {
+
+        if (numberOfIntervals %3 != 0){
+            return;
         }
-        double h = (b-a)/n ;
-        double sum =(Math.exp(3) + Math.exp(1)) , x;
-        for (int i = 0; i < n; i++) {
-            if(i%3 == 0){ x = a + i*h;
-                sum += 2 * Math.exp(x);
+
+        sumOfArea =(Math.exp(3) + Math.exp(1));
+
+        for (int i = 0; i < numberOfIntervals; i++) {
+            if(i%3 == 0){
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += 2 * Math.exp(step);
             } else{
-                x = a + i*h;
-                sum += 3 * Math.exp(x);
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += 3 * Math.exp(step);
             }
         }
-        double err = Math.abs((3*h/8) * sum - exactSolution);
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(3*h/8) * sum,err );
+
+        err = Math.abs((3*stepSize/8) * sumOfArea - exactSolution);
     }
 
     static void weddle() {
-        if (n%5 != 0){ return;
-        } double h = (b-a)/n;
-        double sum =0 , x;
-        for (int i = 0; i <= n; i++) {
+
+        if (numberOfIntervals %5 != 0){
+            return;
+        }
+        for (int i = 0; i <= numberOfIntervals; i++) {
             if(i%2 == 0){
-                x = a + i*h;
-                sum += Math.exp(x);
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += Math.exp(step);
             } else if(i==3 || i==10 || i==17 || i==24) {
-                x = a + i*h; sum += 6 * Math.exp(x);
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += 6 * Math.exp(step);
             } else{
-                x = a + i*h;
-                sum += 5 * Math.exp(x);
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += 5 * Math.exp(step);
             }
         }
-        double err = Math.abs((3*h/10) * sum - exactSolution);
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(3*h/10) * sum,err );
+
+        err = Math.abs((3*stepSize/10) * sumOfArea - exactSolution);
     }
 
     static void boole() {
-        double h = (b-a)/n;
-        double sum = 7*(Math.exp(3) + Math.exp(1)) , x;
-        for (int i = 0; i < n; i++) {
+
+        sumOfArea = 7*(Math.exp(3) + Math.exp(1));
+
+        for (int i = 0; i < numberOfIntervals; i++) {
             if(i%2 != 0){
-                x = a + i*h;
-                sum += 32 * (Math.exp(x));
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += 32 * (Math.exp(step));
             } else if(i==2 || i==10 || i==6 || i==14 || i==18 || i==22 || i==26) {
-                x = a + i*h;
-                sum += 12 * Math.exp(x);
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += 12 * Math.exp(step);
             } else{
-                x = a + i*h;
-                sum += 14 * Math.exp(x);
+                step = integrationLimitLeft + i*stepSize;
+                sumOfArea += 14 * Math.exp(step);
             }
         }
-        double err = Math.abs((2*h/45) * sum - exactSolution);
-        System.out.println(" Ecact Solution Approximate value Error");
-        System.out.printf("%12.5f %15.5f %19.5f",exactSolution,(2*h/45) * sum,err );
+
+        err = Math.abs((2*stepSize/45) * sumOfArea - exactSolution);
     }
 
     public static void main(String[] args) {
-        System.out.println("Choose the method you want: \n" +
-                "1.Rectangle from left.\n" +
-                "2.Rectangle from right.\n" +
-                "3.Mid_point.\n" +
-                "4.Trapezoids.\n" +
-                "5.Simpson 1/3.\n" +
-                "6.Simpson 3/8.\n" +
-                "7.Weddle.\n" +
-                "8.Boole.");
-        Scanner sc = new Scanner(System.in);
-        int a = sc.nextInt();
-        switch (a) {
-            case 1 -> rctRight();
-            case 2 -> rctLeft();
+        System.out.println("""
+
+                *Numerical Integration*
+                
+                For this function: e^(x), "1" as left limit and "3" as right limit, number of intervals N=30.
+                
+                Choose the method of Numerical Integration you want by typing its number:
+                
+                1.Rectangle from left.
+                2.Rectangle from right.
+                3.Mid_point.
+                4.Trapezoids.
+                5.Simpson 1/3.
+                6.Simpson 3/8.
+                7.Weddle.
+                8.Boole.
+                
+                Your choice:""");
+
+        Scanner scanner = new Scanner(System.in);
+        int input = scanner.nextInt();
+
+        switch (input) { //choose the method
+            case 1 -> rightRectangle();
+            case 2 -> leftRectangle();
             case 3 -> midPoint();
             case 4 -> trapezoids();
-            case 5 -> simpsonBy3();
-            case 6 -> _3simpsonBy8();
+            case 5 -> simpsonOneThird();
+            case 6 -> simpsonThreeEighths();
             case 7 -> weddle();
             case 8 -> boole();
             default -> System.out.println("There is no such method");
         }
+        if (input >= 1 && input<= 8) {
+            System.out.println(" Exact Solution Approximate value         Error");
+            System.out.printf("%12.5f %15.5f %19.5f", exactSolution, sumOfArea, err);
+        }
+
     }
 }
